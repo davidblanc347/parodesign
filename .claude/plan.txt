@@ -1,0 +1,75 @@
+Project: Voice-to-Diagram (Tldraw + OpenAI Realtime)
+1. Project Goal
+
+Build a web application that converts natural spoken descriptions into live, auto-laid-out diagrams.
+The user speaks; the system interprets the description, generates a graph structure, computes layout positions, and draws everything in real time on a Tldraw canvas.
+
+2. Tech Stack (Strict Requirements)
+
+Framework: Next.js 14+ (App Router).
+
+Canvas / UI: tldraw (latest version).
+
+Layout Engine: dagre (node/edge graph auto-layout).
+
+AI / Voice: OpenAI Realtime API (WebSockets).
+
+Styling: TailwindCSS.
+
+3. Key Technical Principles
+3.1 No Coordinate Hallucination
+
+The AI must never guess or propose X/Y coordinates.
+Its responsibility is limited to producing a pure graph model:
+
+A list of nodes with semantic types and labels.
+
+A list of edges describing relationships between nodes.
+
+3.2 Interaction Flow
+
+The AI produces a Graph JSON (nodes + edges) via function calling.
+
+The app receives this JSON, then passes it to dagre to calculate node coordinates.
+
+The resulting positioned shapes are injected into the tldraw store.
+
+The diagram updates instantly on the canvas.
+
+3.3 State Management
+
+Use Tldraw’s internal local store to keep all shapes, bindings, and metadata consistent.
+
+4. Implementation Roadmap (Step-by-Step)
+Phase 1 — Canvas & Programmatic Control
+
+ Step 1: Initialize a Next.js project with Tldraw integrated in a dedicated component.
+
+ Step 2: Implement a “Add Test Shapes” button that programmatically inserts shapes into the Tldraw store.
+
+Phase 2 — The Layout Engine (Dagre)
+
+ Step 3: Implement a utility function getAutoLayout(nodes, edges) using dagre.
+
+ Step 4: Add a “Generate Graph” button that takes a mock graph JSON, runs the layout, and injects the result into Tldraw.
+
+Phase 3 — OpenAI Realtime Integration
+
+ Step 5: Set up a relay server (or a Next.js API Route) to hide your OpenAI API key and handle WebSocket bridging.
+
+ Step 6: Connect the frontend to OpenAI Realtime via WebSocket (audio stream + event stream).
+
+ Step 7: Define the generate_diagram tool (JSON Schema) that the AI will call to output the graph structure.
+
+Phase 4 — Fusion
+
+ Step 8: Handle the function_call coming from OpenAI.
+When the AI calls generate_diagram, parse the JSON, run Dagre, and update the Tldraw store in real time.
+
+5. Coding Conventions
+
+Use TypeScript interfaces for all graph structures (nodes, edges, metadata).
+
+Keep the Tldraw component strictly isolated from logic functions (clear separation UI / graph engine / AI).
+
+Use lucide-react for icons.
